@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Tester</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    #text-display {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    #input-box {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+    }
+
+    .result {
+      margin-top: 20px;
+    }
+
+    .result p {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    #time, #speed, #accuracy {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Typing Speed Tester</h1>
+    <p id="text-display">The quick brown fox jumps over the lazy dog.</p>
+    <textarea id="input-box" placeholder="Start typing here..."></textarea>
+    <button id="start-btn">Start Test</button>
+    <div class="result">
+      <p>Time: <span id="time">0</span> seconds</p>
+      <p>Speed: <span id="speed">0</span> WPM</p>
+      <p>Accuracy: <span id="accuracy">0</span>%</p>
+    </div>
+  </div>
+  
+  <script>
+    const textDisplay = document.getElementById('text-display');
+    const inputBox = document.getElementById('input-box');
+    const startBtn = document.getElementById('start-btn');
+    const timeDisplay = document.getElementById('time');
+    const speedDisplay = document.getElementById('speed');
+    const accuracyDisplay = document.getElementById('accuracy');
+
+    let startTime;
+    let timer;
+    let wordsArray;
+    let wordCount;
+    let correctCount;
+
+    startBtn.addEventListener('click', startTest);
+    inputBox.addEventListener('input', checkTyping);
+
+    function startTest() {
+      resetTest();
+      inputBox.value = '';
+      inputBox.disabled = false;
+      inputBox.focus();
+      wordsArray = textDisplay.textContent.split(' ');
+      wordCount = wordsArray.length;
+      correctCount = 0;
+      startTime = new Date().getTime();
+      
+      timer = setInterval(updateTime, 1000);
+    }
+
+    function checkTyping() {
+      const typedText = inputBox.value.trim();
+      const typedWords = typedText.split(' ');
+      
+      correctCount = 0;
+      typedWords.forEach((word, index) => {
+        if (word === wordsArray[index]) {
+          correctCount++;
+        }
+      });
+      
+      if (typedWords.length === wordsArray.length && typedWords.join(' ') === textDisplay.textContent) {
+        clearInterval(timer);
+        inputBox.disabled = true;
+        calculateResult();
+      }
+    }
+
+    function updateTime() {
+      const currentTime = new Date().getTime();
+      const timeElapsed = Math.floor((currentTime - startTime) / 1000);
+      timeDisplay.textContent = timeElapsed;
+    }
+
+    function calculateResult() {
+      const timeTaken = parseInt(timeDisplay.textContent);
+      const speed = Math.round((wordCount / timeTaken) * 60);
+      const accuracy = Math.round((correctCount / wordCount) * 100);
+      
+      speedDisplay.textContent = speed;
+      accuracyDisplay.textContent = accuracy;
+    }
+
+    function resetTest() {
+      clearInterval(timer);
+      timeDisplay.textContent = 0;
+      speedDisplay.textContent = 0;
+      accuracyDisplay.textContent = 0;
+    }
+  </script>
+</body>
+</html>
